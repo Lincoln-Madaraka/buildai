@@ -1,5 +1,4 @@
 import '@fontsource-variable/plus-jakarta-sans'
-import '@fontsource-variable/jetbrains-mono'
 import '@fontsource/instrument-serif/400-italic.css'
 import './styles/tokens.css'
 import './styles/base.css'

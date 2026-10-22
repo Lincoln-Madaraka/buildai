@@ -3,7 +3,7 @@ import { dotFragment } from './glsl/noise'
 
 const vertexShader = /* glsl */ `
 uniform float uTime;
-uniform float uOpacity;
+uniform float uNight;
 uniform float uPixelRatio;
 attribute vec2 aRand;
 varying vec3 vColor;
@@ -16,8 +16,9 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
   float twinkle = 0.55 + 0.45 * sin(uTime * (0.7 + aRand.x) + aRand.y * 40.0);
-  vColor = mix(vec3(0.75, 0.82, 1.0), vec3(1.0, 0.7, 0.5), step(0.85, aRand.y));
-  vAlpha = (0.12 + 0.45 * aRand.y) * twinkle * uOpacity;
+  // Faint motes by day, bright specks at night.
+  vColor = mix(vec3(0.16, 0.19, 0.3), vec3(0.85, 0.9, 1.0), uNight);
+  vAlpha = (0.12 + 0.45 * aRand.y) * twinkle * mix(0.35, 1.0, uNight);
   gl_PointSize = (1.2 + 2.0 * aRand.y) * uPixelRatio * 7.0 / -mv.z;
 }
 `
@@ -25,7 +26,7 @@ void main() {
 /** Fine specks drifting slowly upwards through the whole scene. */
 export class Dust {
   readonly points: THREE.Points
-  private readonly uniforms = { uTime: { value: 0 }, uOpacity: { value: 1 }, uPixelRatio: { value: 1 } }
+  private readonly uniforms = { uTime: { value: 0 }, uNight: { value: 0 }, uPixelRatio: { value: 1 } }
 
   constructor(count: number) {
     const position = new Float32Array(count * 3)
@@ -45,19 +46,19 @@ export class Dust {
       new THREE.ShaderMaterial({
         uniforms: this.uniforms,
         vertexShader,
-        fragmentShader: dotFragment,
+        fragmentShader: dotFragment(0.2),
         transparent: true,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending,
       }),
     )
     this.points.frustumCulled = false
     this.points.renderOrder = 1
   }
 
-  update(time: number, pixelRatio: number): void {
+  update(time: number, night: number, pixelRatio: number): void {
     this.uniforms.uTime.value = time
+    this.uniforms.uNight.value = night
     this.uniforms.uPixelRatio.value = pixelRatio
   }
 }

@@ -8,9 +8,9 @@ uniform float uOpacity;
 uniform float uSize;
 uniform float uPixelRatio;
 uniform vec3 uLight;
-uniform vec3 uLow;
-uniform vec3 uMid;
-uniform vec3 uHigh;
+uniform vec3 uNear;
+uniform vec3 uFar;
+uniform vec3 uWarm;
 attribute vec2 aGrid;
 attribute float aRand;
 varying vec3 vColor;
@@ -47,21 +47,22 @@ void main() {
   vec4 mv = viewMatrix * modelMatrix * vec4(xz.x, h, xz.y, 1.0);
   gl_Position = projectionMatrix * mv;
 
+  // Slate dots close by, fading to hazy blue on the far ridges; sunlit peaks warm up a little.
+  float dist = -mv.z;
   float lit = clamp(dot(n, normalize(uLight)), 0.0, 1.0);
   float peak = smoothstep(0.6, 3.6, h);
-  vec3 col = mix(uLow, uMid, lit);
-  vColor = mix(col, uHigh, peak * lit);
+  vec3 col = mix(uNear, uFar, smoothstep(8.0, 32.0, dist));
+  vColor = mix(col, uWarm, peak * lit * 0.5);
 
-  float dist = -mv.z;
-  float fog = 1.0 - smoothstep(16.0, 36.0, dist);
+  float fog = 1.0 - smoothstep(18.0, 38.0, dist);
   float near = smoothstep(4.0, 8.0, dist);
-  vAlpha = (0.16 + 0.7 * lit * (0.35 + 0.65 * peak)) * fog * near * uOpacity * (0.7 + 0.3 * aRand);
+  vAlpha = (0.2 + 0.55 * lit) * (0.55 + 0.45 * peak) * fog * near * uOpacity * (0.75 + 0.25 * aRand);
   // Size falls off gently with distance so the far ridges stay legible.
   gl_PointSize = uSize * uPixelRatio * (0.8 + 0.4 * aRand) / sqrt(dist);
 }
 `
 
-/** A dotted mountain range under the orb that drifts towards the viewer as the page scrolls. */
+/** A dotted mountain range in morning haze, drifting towards the viewer as the page scrolls. */
 export class Terrain {
   readonly points: THREE.Points
   private readonly uniforms = {
@@ -69,10 +70,10 @@ export class Terrain {
     uOpacity: { value: 1 },
     uSize: { value: 20 },
     uPixelRatio: { value: 1 },
-    uLight: { value: new THREE.Vector3(0.2, 0.8, 0.55) },
-    uLow: { value: new THREE.Color('#1a1450') },
-    uMid: { value: new THREE.Color('#5a2fd8') },
-    uHigh: { value: new THREE.Color('#ff7a2a') },
+    uLight: { value: new THREE.Vector3(0.5, 0.75, 0.45) },
+    uNear: { value: new THREE.Color('#26304a') },
+    uFar: { value: new THREE.Color('#8794b0') },
+    uWarm: { value: new THREE.Color('#c8673b') },
   }
 
   constructor(columns: number, rows: number, octaves: number) {
@@ -102,11 +103,10 @@ export class Terrain {
       new THREE.ShaderMaterial({
         uniforms: this.uniforms,
         vertexShader: vertexShader(octaves),
-        fragmentShader: dotFragment,
+        fragmentShader: dotFragment(0.1),
         transparent: true,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending,
       }),
     )
     this.points.position.y = -2.3

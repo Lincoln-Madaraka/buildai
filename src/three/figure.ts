@@ -160,7 +160,7 @@ export class Figure {
       new THREE.ShaderMaterial({
         uniforms: this.uniforms,
         vertexShader,
-        fragmentShader: dotFragment,
+        fragmentShader: dotFragment(0.3),
         transparent: true,
         depthWrite: false,
         depthTest: false,

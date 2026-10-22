@@ -8,7 +8,7 @@
       name="description"
       content="build records real people doing their real jobs, from their own point of view, to create data that helps AI understand physical work."
     />
-    <meta name="theme-color" content="#050507" />
+    <meta name="theme-color" content="#e9edf2" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="build: every kind of work, seen first-hand" />
     <meta
@@ -25,15 +25,16 @@
 
     <div class="atmosphere" aria-hidden="true"></div>
     <canvas id="stage" aria-hidden="true"></canvas>
+    <div class="mist" aria-hidden="true"></div>
     <div class="fallback-orb" aria-hidden="true"><span></span></div>
     <div class="annotations" aria-hidden="true">
       <span class="annotation" data-anchor="lens">Camera module</span>
-      <span class="annotation" data-anchor="usb">USB-C</span>
+      <span class="annotation" data-anchor="usb" data-side="left">USB-C</span>
       <span class="annotation" data-anchor="cable">Cable through the crown</span>
       <span class="annotation" data-anchor="brim">Clips under the brim</span>
     </div>
     <div class="hotspot" data-hotspot aria-hidden="true">
-      <span class="hotspot__dot"></span>
+      <span class="hotspot__mark"></span>
       <span class="hotspot__line"></span>
       <div class="hotspot__card">
         <span class="hotspot__icon">
@@ -55,16 +56,11 @@
         <a href="#promises" data-nav-link="promises">Promises</a>
       </nav>
       <div class="nav__actions">
-        <button class="icon-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="Pause animation">
-          <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3.6" height="12" rx="1" /><rect x="13.4" y="6" width="3.6" height="12" rx="1" /></svg>
-          <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6c0 .6.7 1 1.2.7l9-5.8a.8.8 0 0 0 0-1.4l-9-5.8c-.5-.3-1.2.1-1.2.7z" /></svg>
-        </button>
-        <a class="pill pill--light pill--sm" href="#take-part">Take part</a>
+        <a class="btn btn--dark btn--sm" href="#take-part">Take part</a>
       </div>
     </header>
 
     <nav class="pager" aria-label="Page progress">
-      <span class="pager__dot" aria-hidden="true"></span>
       <a href="#top" data-pager="top">01</a>
       <a href="#why" data-pager="why">02</a>
       <a href="#cap" data-pager="cap">03</a>
@@ -77,30 +73,23 @@
     <main id="main">
       <section id="top" class="hero" data-section="top">
         <div class="hero__copy">
-          <p class="eyebrow" data-reveal><span class="rec-dot" aria-hidden="true"></span>First-person video of real work</p>
+          <p class="eyebrow" data-reveal>First-person video of real work</p>
           <h1 class="display" data-split>Every kind of work, seen <span class="accent">first-hand.</span></h1>
           <p class="lede" data-reveal>
             We record people doing their real jobs, from their own point of view, to build the data that helps AI
             understand physical work.
           </p>
           <div class="hero__ctas" data-reveal>
-            <a class="pill pill--accent" href="#take-part">
+            <a class="btn btn--accent" href="#take-part">
               Take part
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </a>
-            <a class="circle-link" href="#day">
-              <span class="circle-link__ring" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
-              </span>
+            <a class="link-arrow" href="#day">
               How it works
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
             </a>
           </div>
         </div>
-
-        <a class="badge" href="#why">
-          <svg class="badge__ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" /></svg>
-          <span><strong>Scroll</strong><small>to explore</small></span>
-        </a>
 
         <ul class="glass glass-bar" aria-label="What we stand for" data-reveal>
           <li>
@@ -267,7 +256,7 @@
             <span class="card__tag">For workers</span>
             <h3>I want to take part</h3>
             <p>Wear our cap for a day and do your job exactly as you normally do.</p>
-            <a class="pill pill--accent" data-link="takePart" href="#take-part">
+            <a class="btn btn--accent" data-link="takePart" href="#take-part">
               Register interest
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </a>
@@ -276,7 +265,7 @@
             <span class="card__tag">For businesses</span>
             <h3>Bring us to your workplace</h3>
             <p>Let your team take part. We work around your rules, and we stop whenever you say.</p>
-            <a class="pill pill--light" data-link="business" href="#take-part">
+            <a class="btn btn--dark" data-link="business" href="#take-part">
               Talk to us
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </a>

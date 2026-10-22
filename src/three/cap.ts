@@ -50,9 +50,9 @@ varying vec3 vView;
 void main() {
   float rim = 1.0 - abs(dot(normalize(vNormal), normalize(vView)));
   float fade = (1.0 - vDepth) * smoothstep(0.0, 0.06, vDepth);
-  float scan = 0.82 + 0.18 * sin(vDepth * 70.0 - uTime * 5.0);
-  float a = (pow(rim, 2.2) * 0.6 + 0.07) * fade * scan * uOpacity;
-  vec3 col = mix(vec3(1.0, 0.62, 0.32), vec3(1.0, 0.28, 0.4), vDepth);
+  float pulse = 0.9 + 0.1 * sin(uTime * 1.6);
+  float a = (pow(rim, 2.0) * 0.32 + 0.05) * fade * pulse * uOpacity;
+  vec3 col = mix(vec3(1.0, 0.35, 0.08), vec3(0.88, 0.13, 0.54), vDepth);
   gl_FragColor = vec4(col, a);
   #include <colorspace_fragment>
 }
@@ -204,7 +204,6 @@ export class Cap {
         fragmentShader: coneFragment,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
       }),
     )

@@ -128,11 +128,11 @@ export class Orb {
     uOpacity: { value: 1 },
     uPointer: { value: new THREE.Vector3(0, 0, 1) },
     uPointerStrength: { value: 0 },
-    uC0: { value: new THREE.Color('#2a1a8c') },
-    uC1: { value: new THREE.Color('#5a2fd8') },
+    uC0: { value: new THREE.Color('#2d1fa3') },
+    uC1: { value: new THREE.Color('#5b3df0') },
     uC2: { value: new THREE.Color('#e0218a') },
-    uC3: { value: new THREE.Color('#ff6a1a') },
-    uC4: { value: new THREE.Color('#ffb35c') },
+    uC3: { value: new THREE.Color('#ff5a14') },
+    uC4: { value: new THREE.Color('#ff7a1a') },
   }
   private readonly geometry = new THREE.BufferGeometry()
 
@@ -154,11 +154,10 @@ export class Orb {
     const material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader,
-      fragmentShader: dotFragment,
+      fragmentShader: dotFragment(0.12),
       transparent: true,
       depthWrite: false,
       depthTest: false,
-      blending: THREE.AdditiveBlending,
     })
     this.points = new THREE.Points(g, material)
     this.points.frustumCulled = false

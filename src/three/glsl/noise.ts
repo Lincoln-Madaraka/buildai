@@ -53,8 +53,8 @@ float snoise(vec3 v) {
 }
 `
 
-// Round, soft dot with a faint halo. Shared by every point system.
-export const dotFragment = /* glsl */ `
+/** Round dot with a soft halo of the given strength. Shared by every point system. */
+export const dotFragment = (halo: number) => /* glsl */ `
 varying vec3 vColor;
 varying float vAlpha;
 
@@ -62,8 +62,8 @@ void main() {
   float d = length(gl_PointCoord - 0.5) * 2.0;
   if (d > 1.0) discard;
   float core = 1.0 - smoothstep(0.3, 0.5, d);
-  float halo = exp(-d * d * 4.5) * 0.3;
-  gl_FragColor = vec4(vColor, (core + halo) * vAlpha);
+  float halo = exp(-d * d * 4.5) * ${halo.toFixed(2)};
+  gl_FragColor = vec4(vColor, min(core + halo, 1.0) * vAlpha);
   #include <colorspace_fragment>
 }
 `
