@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>build: every kind of work, seen first-hand</title>
+    <meta
+      name="description"
+      content="build records real people doing their real jobs, from their own point of view, to create data that helps AI understand physical work."
+    />
+    <meta name="theme-color" content="#050507" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="build: every kind of work, seen first-hand" />
+    <meta
+      property="og:description"
+      content="First-person video of real people doing real work. Consent first. Paid the same day."
+    />
+    <meta property="og:image" content="favicon.png" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="favicon.png" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="atmosphere" aria-hidden="true"></div>
+    <canvas id="stage" aria-hidden="true"></canvas>
+    <div class="fallback-orb" aria-hidden="true"><span></span></div>
+    <div class="annotations" aria-hidden="true">
+      <span class="annotation" data-anchor="lens">Camera module</span>
+      <span class="annotation" data-anchor="usb">USB-C</span>
+      <span class="annotation" data-anchor="cable">Cable through the crown</span>
+      <span class="annotation" data-anchor="brim">Clips under the brim</span>
+    </div>
+
+    <header class="nav" data-nav>
+      <a class="nav__logo" href="#top" aria-label="build, back to top">
+        <img src="logo-mark.png" alt="build" width="170" height="57" />
+      </a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="#why" data-nav-link="why">Why</a>
+        <a href="#cap" data-nav-link="cap">The cap</a>
+        <a href="#work" data-nav-link="work">The work</a>
+        <a href="#day" data-nav-link="day">How it works</a>
+        <a href="#promises" data-nav-link="promises">Promises</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="icon-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="Pause animation">
+          <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3.6" height="12" rx="1" /><rect x="13.4" y="6" width="3.6" height="12" rx="1" /></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 6.2v11.6c0 .6.7 1 1.2.7l9-5.8a.8.8 0 0 0 0-1.4l-9-5.8c-.5-.3-1.2.1-1.2.7z" /></svg>
+        </button>
+        <a class="pill pill--light pill--sm" href="#take-part">Take part</a>
+      </div>
+    </header>
+
+    <nav class="pager" aria-label="Page progress">
+      <span class="pager__dot" aria-hidden="true"></span>
+      <a href="#top" data-pager="top">01</a>
+      <a href="#why" data-pager="why">02</a>
+      <a href="#cap" data-pager="cap">03</a>
+      <a href="#work" data-pager="work">04</a>
+      <a href="#day" data-pager="day">05</a>
+      <a href="#promises" data-pager="promises">06</a>
+      <a href="#take-part" data-pager="take-part">07</a>
+    </nav>
+
+    <main id="main">
+      <section id="top" class="hero" data-section="top">
+        <div class="hero__copy">
+          <p class="eyebrow" data-reveal><span class="rec-dot" aria-hidden="true"></span>First-person video of real work</p>
+          <h1 class="display" data-split>Every kind of work, seen <span class="accent">first-hand.</span></h1>
+          <p class="lede" data-reveal>
+            We record people doing their real jobs, from their own point of view, to build the data that helps AI
+            understand physical work.
+          </p>
+          <div class="hero__ctas" data-reveal>
+            <a class="pill pill--accent" href="#take-part">
+              Take part
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+            <a class="circle-link" href="#day">
+              <span class="circle-link__ring" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+              </span>
+              How it works
+            </a>
+          </div>
+        </div>
+
+        <ul class="glass glass-bar" aria-label="What we stand for" data-reveal>
+          <li>
+            <span class="glass-bar__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z" /><path d="M9 12l2 2 4-4" /></svg>
+            </span>
+            <span><strong>Consent first</strong><small>No consent, no recording</small></span>
+          </li>
+          <li>
+            <span class="glass-bar__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3" /><path d="M3 10h18" /><path d="M15.5 14.5h2" /></svg>
+            </span>
+            <span><strong>Paid the same day</strong><small>Every person who takes part</small></span>
+          </li>
+          <li>
+            <span class="glass-bar__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>
+            </span>
+            <span><strong>A full working day</strong><small>One cap, one charge</small></span>
+          </li>
+          <li>
+            <span class="glass-bar__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.2 5.2L4 17l3 3 5.5-5.5a4 4 0 0 0 5.2-5.2l-2.4 2.4-2.6-.4-.4-2.6 2.4-2.4z" /></svg>
+            </span>
+            <span><strong>Real work, real places</strong><small>No sets. No scripts.</small></span>
+          </li>
+        </ul>
+      </section>
+
+      <section id="why" class="why" data-section="why">
+        <p class="kicker" data-reveal>Why we collect</p>
+        <h2 class="manifesto">
+          <span data-phrase>New place.</span>
+          <span data-phrase>New job.</span>
+          <span data-phrase>New person.</span>
+        </h2>
+        <p class="lede why__lede" data-reveal>
+          We're capturing the full range of physical work humans do. That takes real variety, so every recording
+          should bring something new: a different workplace, a different job, a different pair of hands.
+        </p>
+      </section>
+
+      <section id="cap" class="cap" data-section="cap">
+        <div class="cap__sticky">
+          <div class="cap__copy">
+            <p class="kicker" data-reveal>The capture cap</p>
+            <h2 data-reveal>One cap. <span class="accent">A full working day.</span></h2>
+            <p class="lede" data-reveal>
+              A small camera clips under the front of the brim and records what the wearer sees: their hands, their
+              tools, the work in front of them. No phones. No extra rigs. Just the cap.
+            </p>
+            <dl class="spec-list" data-reveal>
+              <div><dt>Camera</dt><dd>Clips under the front of the brim</dd></div>
+              <div><dt>Power</dt><dd>USB-C on the camera module</dd></div>
+              <div><dt>Cable</dt><dd>Runs up through the crown</dd></div>
+              <div><dt>Battery</dt><dd>A full working day on one charge</dd></div>
+              <div><dt>Fit</dt><dd>Worn level, nothing over the lens</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section id="work" class="work" data-section="work">
+        <div class="section-head">
+          <p class="kicker" data-reveal>What we record</p>
+          <h2 data-reveal>Real work, at <span class="accent">real speed.</span></h2>
+          <p class="lede" data-reveal>The best footage is someone doing the job they know, the way they always do it.</p>
+        </div>
+        <div class="cards-2">
+          <article class="glass card" data-reveal>
+            <h3>We record</h3>
+            <ul class="ticks">
+              <li>Real people doing their real job, at normal speed</li>
+              <li>The whole task: setup, the work, the problems, the cleanup</li>
+              <li>Skilled trades with real tools and materials</li>
+              <li>Unusual jobs nobody else is capturing</li>
+              <li>Hands in frame, start to finish</li>
+            </ul>
+          </article>
+          <article class="glass card card--quiet" data-reveal>
+            <h3>We don't</h3>
+            <ul class="crosses">
+              <li>Anything staged or acted for the camera</li>
+              <li>Homes. We never record where people live</li>
+              <li>Idle time, waiting around or phone use</li>
+              <li>Objects handed across a table to handle</li>
+              <li>The same simple task, over and over</li>
+            </ul>
+          </article>
+        </div>
+        <div class="marquee" aria-label="Examples of work we record">
+          <ul class="marquee__track">
+            <li>Welder</li><li>Mechanic</li><li>Tailor</li><li>Baker</li><li>Electrician</li><li>Carpenter</li>
+            <li>Barber</li><li>Potter</li><li>Fishmonger</li><li>Farmworker</li><li>Cook</li><li>Machinist</li>
+            <li>Florist</li><li>Shoe repairer</li><li>Mason</li><li>Upholsterer</li><li>Sign maker</li><li>Coffee roaster</li>
+          </ul>
+          <ul class="marquee__track" aria-hidden="true">
+            <li>Welder</li><li>Mechanic</li><li>Tailor</li><li>Baker</li><li>Electrician</li><li>Carpenter</li>
+            <li>Barber</li><li>Potter</li><li>Fishmonger</li><li>Farmworker</li><li>Cook</li><li>Machinist</li>
+            <li>Florist</li><li>Shoe repairer</li><li>Mason</li><li>Upholsterer</li><li>Sign maker</li><li>Coffee roaster</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="day" class="day" data-section="day">
+        <div class="section-head">
+          <p class="kicker" data-reveal>How it works</p>
+          <h2 data-reveal>A normal day, with a <span class="accent">camera cap.</span></h2>
+        </div>
+        <ol class="steps">
+          <li class="glass step" data-reveal>
+            <span class="step__num">01</span>
+            <h3>We meet you at work</h3>
+            <p>Our team visits your workplace and explains everything before anything starts.</p>
+          </li>
+          <li class="glass step" data-reveal>
+            <span class="step__num">02</span>
+            <h3>You say yes</h3>
+            <p>You give your consent on our app. No consent, no recording.</p>
+          </li>
+          <li class="glass step" data-reveal>
+            <span class="step__num">03</span>
+            <h3>You work as normal</h3>
+            <p>Wear the cap and do your job exactly the way you usually do.</p>
+          </li>
+          <li class="glass step" data-reveal>
+            <span class="step__num">04</span>
+            <h3>We collect the cap</h3>
+            <p>At the end of the day, our team picks the cap back up.</p>
+          </li>
+          <li class="glass step" data-reveal>
+            <span class="step__num">05</span>
+            <h3>You're paid the same day</h3>
+            <p>Your payment comes the same day you take part.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="promises" class="promises" data-section="promises">
+        <div class="promises__copy">
+          <p class="kicker" data-reveal>Our promises</p>
+          <h2 data-reveal>People first. <span class="accent">Always.</span></h2>
+          <p class="lede" data-reveal>
+            Behind every recording is a person doing a job they know by heart. This is how we treat them, and the
+            places they work.
+          </p>
+          <ul class="promise-grid">
+            <li data-reveal><h3>No consent, no recording</h3><p>Nothing records until you've said yes on our app.</p></li>
+            <li data-reveal><h3>Paid the same day</h3><p>Everyone who takes part is paid the same day.</p></li>
+            <li data-reveal><h3>Never in homes</h3><p>We record at workplaces only. Never where people live.</p></li>
+            <li data-reveal><h3>Your workplace, your rules</h3><p>We follow each site's own rules. A no-filming sign means no filming.</p></li>
+            <li data-reveal>
+              <h3>Sensitive places stay off-limits</h3>
+              <p>Clinics, places of worship, schools, banks, government sites and changing areas, unless cleared in advance.</p>
+            </li>
+            <li data-reveal><h3>Say stop, we stop</h3><p>If you, or anyone on site, asks us to stop, we stop.</p></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="take-part" class="take-part" data-section="take-part">
+        <div class="section-head section-head--center">
+          <p class="kicker" data-reveal>Take part</p>
+          <h2 data-reveal>Your work is worth <span class="accent">seeing.</span></h2>
+          <p class="lede" data-reveal>Whether you work with your hands or run a place where people do, we'd like to meet you.</p>
+        </div>
+        <div class="cards-2">
+          <article class="glass card card--cta" data-reveal>
+            <span class="card__tag">For workers</span>
+            <h3>I want to take part</h3>
+            <p>Do your normal job wearing our cap for the day, and get paid the same day.</p>
+            <a class="pill pill--accent" data-link="takePart" href="#take-part">
+              Register interest
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </article>
+          <article class="glass card card--cta" data-reveal>
+            <span class="card__tag">For businesses</span>
+            <h3>Bring us to your workplace</h3>
+            <p>Let your team take part. We work around your rules, and we stop whenever you say.</p>
+            <a class="pill pill--light" data-link="business" href="#take-part">
+              Talk to us
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </article>
+        </div>
+        <p class="partners" data-reveal>Partners and press: <a data-link="contact" href="#take-part">get in touch</a>.</p>
+      </section>
+    </main>
+
+    <footer class="footer" data-section="footer">
+      <div class="footer__stage" aria-hidden="true"></div>
+      <div class="footer__row">
+        <img class="footer__logo" src="logo-mark.png" alt="build" width="170" height="57" />
+        <p class="footer__line">Capturing the full range of human work.</p>
+        <nav class="footer__links" aria-label="Footer">
+          <a href="#why">Why</a>
+          <a href="#cap">The cap</a>
+          <a href="#day">How it works</a>
+          <a href="#take-part">Take part</a>
+        </nav>
+        <p class="footer__legal">© <span data-year>2026</span> build · <a href="#top">Back to top ↑</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

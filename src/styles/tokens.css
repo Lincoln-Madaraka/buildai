@@ -1,0 +1,46 @@
+:root {
+  color-scheme: dark;
+
+  --bg: #050507;
+  --bg-raise: #0c0c12;
+  --fg: #ffffff;
+  --fg-2: #c9c9d3;
+  --muted: #8e8e9b;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.24);
+
+  --glass: rgba(20, 20, 30, 0.42);
+  --glass-solid: rgba(18, 18, 26, 0.92);
+  --glass-hi: rgba(255, 255, 255, 0.06);
+
+  --accent: #ff6a1a;
+  --accent-hi: #ff8a3d;
+  --magenta: #ff2d6f;
+  --violet: #6a3df0;
+  --amber: #ffb35c;
+  --grad: linear-gradient(95deg, #ffb35c 0%, #ff6a1a 34%, #ff2d6f 70%, #8b5cf6 100%);
+
+  --font: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-display: clamp(2.9rem, 7vw, 6.6rem);
+  --fs-h2: clamp(2.2rem, 4.6vw, 4.3rem);
+  --fs-h3: clamp(1.1rem, 1.4vw, 1.3rem);
+  --fs-lede: clamp(1.05rem, 1.35vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.75rem;
+
+  --radius: 26px;
+  --radius-sm: 16px;
+  --pill: 999px;
+  --blur: 18px;
+
+  --gutter: clamp(16px, 4.5vw, 64px);
+  --maxw: 1320px;
+  --nav-h: 76px;
+  --section-pad: clamp(96px, 14vh, 168px);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

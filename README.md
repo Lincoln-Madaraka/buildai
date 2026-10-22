@@ -1,34 +1,47 @@
-# buildai
+# build
 
-Tooling for field collection of first-person video of people doing real physical work, recorded on a capture cap. It covers registering participants, taking consent, logging captures, and getting footage off the caps.
+Landing page for **build**: first-person video of real people doing real work, recorded on a capture cap.
 
-The source of truth for all rules below is the client's **Collection Brief v1.5** (12 Aug 2026). It is confidential: keep this repo private and do not share the brief outside the organisation.
+A single static page with a WebGL scene behind the content:
 
-## How a collection day works
+- **Hero orb**: a dot-grid sphere folded by noise, coloured by viewing angle (orange rim, magenta, violet core). It reacts to the pointer.
+- **The cap**: the orb's points re-form into the capture cap, then a solid 3D cap takes over and comes apart into its parts as you scroll.
+- **Promises**: a figure made of light, with rays falling into an open hand.
+- **Footer**: the points settle into the "build" wordmark.
 
-1. **Charge:** every cap is fully charged overnight. Each one records 8 to 10 hours.
-2. **Approach:** the field team finds workers on site.
-3. **Consent:** the participant is registered and gives consent in the collection app. No consent, no recording.
-4. **Record:** the participant wears the cap through their working day. The capture is logged against them in the app.
-5. **Collect and pay:** caps are recovered and counted at the end of the day, and the participant is paid the same day.
-6. **Upload:** back at base, caps are offloaded through the ingest hardware. This needs a stable 300 Mbps to 1 Gbps connection, or a backlog builds up.
+Built with Vite, TypeScript, [Three.js](https://threejs.org), [GSAP](https://gsap.com) and [Lenis](https://lenis.darkroom.engineering).
 
-## Rules the tooling must enforce
+## Run it
 
-| Rule | Limit |
+Needs Node 18 or newer (Vite 6).
+
+```bash
+npm install
+npm run dev       # local dev server
+npm run build     # type-check and build to dist/
+npm run preview   # serve the production build
+```
+
+`dist/` is plain static files. Any static host works (Vercel, Netlify, GitHub Pages), and asset paths are relative.
+
+## Edit
+
+| What | Where |
 |---|---|
-| Usable hours per participant | 10 in total. Hours past 10 are neither usable nor paid, so track them per person. |
-| Share of hours from any one environment category | 15% at most |
-| Distinct environment categories | At least 8 |
-| Consent | Must be recorded before any capture |
-| Homes | Not allowed |
-| Restricted sites: healthcare, religious sites, schools and places for children, banks and legal offices, government and police premises, anywhere people may be undressed | Need the client's written approval first. Footage collected without it is destroyed and not paid. |
+| Copy and sections | `index.html` |
+| Take-part and contact links | `src/config.ts` |
+| Colours, type, spacing | `src/styles/tokens.css` |
+| Orb look (noise, colours, dot size) | `src/three/orb.ts` |
+| Capture cap model | `src/three/cap.ts` |
+| Light figure | `src/three/figure.ts` |
+| Scroll choreography | `src/three/choreography.ts` |
 
-Every clip is tagged with:
+## Behaviour
 
-- **Environment category:** one of 26 fixed values (Brief, Appendix A). Do not add new ones. Ask the client rather than using "Other".
-- **Job:** one of 235 fixed values (Brief, Appendix B). Use the closest match.
+- **Quality tiers.** Phones get fewer points and no bloom. The page steps down further if frames run slow.
+- **Reduced motion.** `prefers-reduced-motion` turns off smooth scrolling and slows the scene. The round button in the nav pauses all animation.
+- **No WebGL.** A CSS dotted orb stands in, and every section still reads.
 
-## Setup
+## Content
 
-_To be added: tech stack, install steps, and how to run it._
+The page carries the public summary of the project only. Internal collection rules, quotas and logistics stay out, and so do invented numbers. PDFs are git-ignored so internal documents can't be committed by accident.

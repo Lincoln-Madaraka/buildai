@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vite/
+shots/
+.DS_Store
+*.log
+.env*
+# The collection brief is confidential and must never be committed.
+*.pdf
