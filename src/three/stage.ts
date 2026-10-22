@@ -49,17 +49,51 @@ export function startStage(): void {
   if (tier.name !== 'low') {
     const pmrem = new THREE.PMREMGenerator(renderer)
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    scene.environmentIntensity = 0.35
+    scene.environmentIntensity = 0.6
     pmrem.dispose()
   }
-  // Rim lights in the orb's colours, so the black cap reads against the black page.
-  const warm = new THREE.DirectionalLight(0xff6a1a, 3.2)
-  warm.position.set(-3, 2.2, -2.5)
-  const cool = new THREE.DirectionalLight(0x7a5cff, 2.6)
+  // Soft daylight for the cap, with rim lights in the orb's colours.
+  const key = new THREE.DirectionalLight(0xffffff, 2.4)
+  key.position.set(-2.5, 3.5, 4)
+  const warm = new THREE.DirectionalLight(0xff7a2a, 1.4)
+  warm.position.set(-3, 1.5, -3)
+  const cool = new THREE.DirectionalLight(0x6f7cff, 1.1)
   cool.position.set(3.2, 1.2, -2)
-  const fill = new THREE.DirectionalLight(0xffffff, 0.75)
-  fill.position.set(0.5, 2.5, 5)
-  scene.add(warm, cool, fill, new THREE.AmbientLight(0xffffff, 0.08))
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xd8cdc0, 1.3), key, warm, cool)
+
+  // A full-screen night sky that fades in over the daylight page for the Promises section.
+  const nightUniforms = { uNight: { value: 0 } }
+  const nightSky = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    new THREE.ShaderMaterial({
+      uniforms: nightUniforms,
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position.xy, 0.0, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform float uNight;
+        varying vec2 vUv;
+        void main() {
+          vec3 col = mix(vec3(0.012, 0.008, 0.035), vec3(0.004, 0.004, 0.01), vUv.y);
+          vec2 d = (vUv - vec2(0.7, 0.45)) * vec2(1.5, 2.0);
+          col += vec3(0.02, 0.03, 0.09) * exp(-dot(d, d) * 6.0);
+          gl_FragColor = vec4(col, uNight);
+          #include <colorspace_fragment>
+        }
+      `,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+    }),
+  )
+  nightSky.frustumCulled = false
+  nightSky.renderOrder = -10
+  scene.add(nightSky)
+  let lastNight = -1
 
   const terrain = new Terrain(tier.terrain[0], tier.terrain[1], tier.octaves)
   const dust = new Dust(tier.dust)
@@ -84,7 +118,7 @@ export function startStage(): void {
   const fields = Object.keys(cur) as (keyof SceneValues)[]
 
   const annotations = Array.from(document.querySelectorAll<HTMLElement>('.annotation'))
-    .map((el) => ({ el, anchor: cap.anchors[el.dataset.anchor ?? ''] }))
+    .map((el) => ({ el, anchor: cap.anchors[el.dataset.anchor ?? ''], left: el.dataset.side === 'left' }))
     .filter((a) => a.anchor)
   const hotspot = document.querySelector<HTMLElement>('[data-hotspot]')
   let hotspotCardWidth = 300
@@ -134,7 +168,7 @@ export function startStage(): void {
 
   gsap.ticker.add((_time, deltaMS) => {
     const dt = Math.min(deltaMS / 1000, 0.05)
-    const speed = motion.paused ? 0 : motion.reduced ? 0.15 : 1
+    const speed = motion.reduced ? 0.15 : 1
     clock += dt
     elapsed += dt * speed
     spin += dt * speed * 0.12
@@ -200,7 +234,15 @@ export function startStage(): void {
     }
     figure.update(figureOpacity, elapsed, 0.016 * figure.group.scale.x * focal, dpr)
     terrain.update(elapsed, window.scrollY, cur.ground * introE, focal, dpr)
-    dust.update(elapsed, dpr)
+    dust.update(elapsed, cur.night, dpr)
+
+    // Night: the sky in WebGL, and the page text colours through the --night CSS variable.
+    nightUniforms.uNight.value = cur.night
+    nightSky.visible = cur.night > 0.002
+    if (Math.abs(cur.night - lastNight) > 0.002) {
+      lastNight = cur.night
+      document.documentElement.style.setProperty('--night', cur.night.toFixed(3))
+    }
 
     // Slight camera parallax with the mouse.
     const ease = 1 - Math.exp(-dt * 2)
@@ -214,7 +256,11 @@ export function startStage(): void {
       a.el.style.opacity = labels > 0.01 ? String(labels) : '0'
       if (labels <= 0.01) continue
       a.anchor.getWorldPosition(tmp).project(camera)
-      a.el.style.transform = `translate3d(${(tmp.x * 0.5 + 0.5) * width + 12}px, ${(-tmp.y * 0.5 + 0.5) * height - 14}px, 0)`
+      const x = (tmp.x * 0.5 + 0.5) * width
+      const y = (-tmp.y * 0.5 + 0.5) * height - 16
+      a.el.style.transform = a.left
+        ? `translate3d(calc(${x - 14}px - 100%), ${y}px, 0)`
+        : `translate3d(${x + 14}px, ${y}px, 0)`
     }
 
     // The hero hotspot card points at the top of the orb and stays inside the screen.

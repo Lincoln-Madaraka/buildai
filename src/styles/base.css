@@ -87,7 +87,7 @@ button {
   top: -60px;
   z-index: 100;
   padding: 10px 16px;
-  border-radius: var(--pill);
+  border-radius: 8px;
   background: var(--ink);
   color: #fff;
   font-weight: 600;
@@ -172,8 +172,4 @@ main,
   .atmosphere::before {
     animation: none;
   }
-}
-
-.motion-paused .atmosphere::before {
-  animation-play-state: paused;
 }
