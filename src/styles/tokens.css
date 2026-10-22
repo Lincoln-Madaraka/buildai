@@ -1,38 +1,49 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --bg: #050507;
-  --bg-raise: #0c0c12;
-  --fg: #ffffff;
-  --fg-2: #c9c9d3;
-  --muted: #8e8e9b;
-  --line: rgba(255, 255, 255, 0.12);
-  --line-strong: rgba(255, 255, 255, 0.24);
+  /* 0 by day, 1 when the scene turns to night (the Promises section). Set by the 3D stage. */
+  --night: 0;
 
-  --glass: rgba(20, 20, 30, 0.42);
-  --glass-solid: rgba(18, 18, 26, 0.92);
-  --glass-hi: rgba(255, 255, 255, 0.06);
+  /* Fixed ink for UI that sits on light glass: nav, buttons, cards. */
+  --ink: #0d0f14;
+  --ink-2: #3b4150;
+  --ink-3: #5f6574;
 
-  --accent: #ff6a1a;
-  --accent-hi: #ff8a3d;
-  --magenta: #ff2d6f;
-  --violet: #6a3df0;
-  --amber: #ffb35c;
-  --grad: linear-gradient(95deg, #ffb35c 0%, #ff6a1a 34%, #ff2d6f 70%, #8b5cf6 100%);
+  /* Section text follows the scene: dark by day, white at night. */
+  --fg: color-mix(in srgb, #ffffff calc(var(--night) * 100%), var(--ink));
+  --fg-2: color-mix(in srgb, rgba(255, 255, 255, 0.8) calc(var(--night) * 100%), var(--ink-2));
+  --muted: color-mix(in srgb, rgba(255, 255, 255, 0.62) calc(var(--night) * 100%), var(--ink-3));
+  --line: color-mix(in srgb, rgba(255, 255, 255, 0.22) calc(var(--night) * 100%), rgba(13, 15, 20, 0.1));
+  --line-strong: rgba(13, 15, 20, 0.18);
+
+  --bg: #e9edf2;
+  --glass: rgba(255, 255, 255, 0.5);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-solid: rgba(248, 249, 251, 0.95);
+  --glass-edge: rgba(255, 255, 255, 0.85);
+  --shadow: 0 22px 50px -30px rgba(22, 28, 45, 0.4);
+
+  --accent: #ff5a14;
+  --accent-hi: #ff6f2e;
+  --accent-ink: #c2410c;
+  --magenta: #e0218a;
+  --violet: #5b3df0;
+  --grad: linear-gradient(95deg, #f2621f 0%, #ff4d2e 30%, #e0218a 66%, #5b3df0 100%);
 
   --font: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
-  --fs-display: clamp(2.9rem, 7vw, 6.6rem);
+  --fs-display: clamp(2.8rem, 6.2vw, 6.2rem);
   --fs-h2: clamp(2.2rem, 4.6vw, 4.3rem);
   --fs-h3: clamp(1.1rem, 1.4vw, 1.3rem);
-  --fs-lede: clamp(1.05rem, 1.35vw, 1.25rem);
+  --fs-lede: clamp(1.05rem, 1.35vw, 1.22rem);
   --fs-body: 1rem;
   --fs-small: 0.875rem;
   --fs-label: 0.75rem;
 
   --radius: 26px;
-  --radius-sm: 16px;
+  --radius-sm: 18px;
   --pill: 999px;
   --blur: 18px;
 
