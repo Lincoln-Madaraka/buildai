@@ -44,7 +44,7 @@ export async function startStage(): Promise<void> {
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
-    antialias: tier.name !== 'low',
+    antialias: false,
     alpha: true,
     powerPreference: 'high-performance',
   })
@@ -57,12 +57,6 @@ export async function startStage(): Promise<void> {
   const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 120)
   camera.position.set(0, 0, CAM_Z)
 
-  if (tier.name !== 'low') {
-    const pmrem = new THREE.PMREMGenerator(renderer)
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    scene.environmentIntensity = 0.6
-    pmrem.dispose()
-  }
   // Soft daylight for the cap, with rim lights in the orb's colours.
   const key = new THREE.DirectionalLight(0xffffff, 2.4)
   key.position.set(-2.5, 3.5, 4)
@@ -135,7 +129,6 @@ export async function startStage(): Promise<void> {
   let elapsed = 0
   let clock = 0
   let spin = 0
-  let intro = motion.shot ? 1 : 0
   let first = true
   let frames = 0
   let frameTime = 0
@@ -151,18 +144,16 @@ export async function startStage(): Promise<void> {
     clock += dt
     elapsed += dt * speed
     spin += dt * speed * 0.12
-    intro = Math.min(1, intro + dt * 0.7)
-    const introE = 1 - Math.pow(1 - intro, 3)
     const phone = camera.aspect < 0.9
 
     choreo.sample(window.scrollY, phone, target)
-    const k = first || motion.shot || motion.reduced ? 1 : 1 - Math.exp(-dt * 5)
+    const k = first || motion.shot || motion.reduced ? 1 : 1 - Math.exp(-dt * 14)
     first = false
     for (const f of fields) cur[f] += (target[f] - cur[f]) * k
 
     const halfH = CAM_Z * TAN
     const halfW = halfH * camera.aspect
-    const radius = Math.max(cur.s * halfH * 0.56 * (0.55 + 0.45 * introE), 0.001)
+    const radius = Math.max(cur.s * halfH * 0.56, 0.001)
     rig.position.set(cur.x * halfW, cur.y * halfH, 0)
     rig.scale.setScalar(radius)
 
@@ -197,15 +188,15 @@ export async function startStage(): Promise<void> {
     u.uPalette.value = cur.palette
     u.uToCap.value = cur.toCap
     u.uToWord.value = cur.toWord
-    u.uOpacity.value = (1 - cur.dim) * (1 - cur.solid) * introE
+    u.uOpacity.value = (1 - cur.dim) * (1 - cur.solid)
     u.uPointerStrength.value = pointerStrength
     u.uPixelRatio.value = dpr
     u.uSize.value = (Math.PI / 2 / orb.grid) * 0.5 * 2.5 * radius * focal
 
-    cap?.update(cur.solid * introE, cur.explode, cur.cone, elapsed)
+    cap?.update(cur.solid, cur.explode, cur.cone, elapsed)
 
     if (figure) {
-      const figureOpacity = cur.figure * introE * (phone ? 0.55 : 1)
+      const figureOpacity = cur.figure * (phone ? 0.55 : 1)
       if (figureOpacity > 0.01) {
         const scale = halfH * (phone ? 0.52 : 0.62)
         figure.group.position.set(phone ? 0 : halfW * 0.42, -halfH * 0.04, 0)
@@ -214,7 +205,7 @@ export async function startStage(): Promise<void> {
       }
       figure.update(figureOpacity, elapsed, 0.016 * figure.group.scale.x * focal, dpr)
     }
-    terrain.update(elapsed, window.scrollY, cur.ground * introE, focal)
+    terrain.update(elapsed, window.scrollY, cur.ground, focal)
     dust.update(elapsed, dpr)
 
     // Slight camera parallax with the mouse.
@@ -238,7 +229,7 @@ export async function startStage(): Promise<void> {
 
     // The hero hotspot card points at the top of the orb and stays inside the screen.
     if (hotspot) {
-      const show = width >= 1100 ? (1 - THREE.MathUtils.smoothstep(window.scrollY, 0, height * 0.3)) * introE : 0
+      const show = width >= 1100 ? 1 - THREE.MathUtils.smoothstep(window.scrollY, 0, height * 0.3) : 0
       hotspot.style.opacity = String(show)
       if (show > 0.01) {
         tmp.set(rig.position.x + radius * 0.22, rig.position.y + radius * 0.74, radius * 0.6).project(camera)
@@ -274,6 +265,12 @@ export async function startStage(): Promise<void> {
   // leaves the orb running rather than dropping to the fallback.
   try {
     await idle()
+    if (tier.name !== 'low') {
+      const pmrem = new THREE.PMREMGenerator(renderer)
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+      scene.environmentIntensity = 0.6
+      pmrem.dispose()
+    }
     const builtCap = new Cap()
     const capSamples = sampleSurface(builtCap.surfaceMeshes(), builtCap.group, orb.count)
     orb.setTarget('aCap', capSamples.pos)

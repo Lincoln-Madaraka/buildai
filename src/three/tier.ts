@@ -8,9 +8,9 @@ export interface Tier {
 }
 
 const TIERS: Record<Tier['name'], Tier> = {
-  high: { name: 'high', grid: 92, dprCap: 1.75, figure: 14000, dust: 1400 },
-  mid: { name: 'mid', grid: 76, dprCap: 1.5, figure: 10000, dust: 900 },
-  low: { name: 'low', grid: 60, dprCap: 1.5, figure: 6000, dust: 500 },
+  high: { name: 'high', grid: 80, dprCap: 1.5, figure: 10000, dust: 900 },
+  mid: { name: 'mid', grid: 66, dprCap: 1.25, figure: 8000, dust: 600 },
+  low: { name: 'low', grid: 50, dprCap: 1.25, figure: 5000, dust: 300 },
 }
 
 export function pickTier(): Tier {

@@ -39,11 +39,10 @@ float field(vec3 p) {
   return n + ripple;
 }
 
-vec3 surface(vec3 dir) {
+float displacement(vec3 dir) {
   float d = field(dir) * uAmp;
   float pd = distance(dir, uPointer);
-  d += uPointerStrength * 0.2 * exp(-pd * pd * 5.0);
-  return dir * (1.0 + d);
+  return d + uPointerStrength * 0.2 * exp(-pd * pd * 5.0);
 }
 
 // Rim-to-core ramp: amber and orange on the rim, magenta between, violet and indigo in the centre.
@@ -61,16 +60,10 @@ vec3 iridescent(float f, vec3 dir) {
 
 void main() {
   vec3 dir = normalize(position);
-  vec3 p = surface(dir);
-
-  // Normal of the folded surface from two nearby samples, for the fresnel colouring.
-  vec3 up = abs(dir.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
-  vec3 t1 = normalize(cross(up, dir));
-  vec3 t2 = cross(dir, t1);
-  vec3 pa = surface(normalize(dir + t1 * 0.02));
-  vec3 pb = surface(normalize(dir + t2 * 0.02));
-  vec3 n = normalize(cross(pa - p, pb - p));
-  if (dot(n, dir) < 0.0) n = -n;
+  float d = displacement(dir);
+  vec3 p = dir * (1.0 + d);
+  // Fold crests take the rim colour, troughs fall back towards the core: one noise sample per dot.
+  float crest = clamp(d / max(uAmp, 0.001), -1.0, 1.0);
 
   // Morph to the cap and to the wordmark, each point leaving at its own moment and swirling in flight.
   float delay = aRand.x * 0.45;
@@ -91,9 +84,9 @@ void main() {
   gl_Position = projectionMatrix * mv;
 
   vec3 viewDir = normalize(-mv.xyz);
-  float facingS = dot(normalize(normalMatrix * n), viewDir);
+  float facingS = dot(normalize(normalMatrix * dir), viewDir);
   float facingC = dot(normalize(normalMatrix * aCapN), viewDir);
-  float fS = pow(1.0 - abs(facingS), 1.35);
+  float fS = clamp(pow(1.0 - abs(facingS), 1.35) + crest * 0.38, 0.0, 1.0);
   float fC = pow(1.0 - abs(facingC), 1.2);
 
   vec3 colS = mix(fire(fS), iridescent(fS, dir), uPalette);
