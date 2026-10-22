@@ -61,40 +61,6 @@ export function startStage(): void {
   cool.position.set(3.2, 1.2, -2)
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd8cdc0, 1.3), key, warm, cool)
 
-  // A full-screen night sky that fades in over the daylight page for the Promises section.
-  const nightUniforms = { uNight: { value: 0 } }
-  const nightSky = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    new THREE.ShaderMaterial({
-      uniforms: nightUniforms,
-      vertexShader: /* glsl */ `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = vec4(position.xy, 0.0, 1.0);
-        }
-      `,
-      fragmentShader: /* glsl */ `
-        uniform float uNight;
-        varying vec2 vUv;
-        void main() {
-          vec3 col = mix(vec3(0.012, 0.008, 0.035), vec3(0.004, 0.004, 0.01), vUv.y);
-          vec2 d = (vUv - vec2(0.7, 0.45)) * vec2(1.5, 2.0);
-          col += vec3(0.02, 0.03, 0.09) * exp(-dot(d, d) * 6.0);
-          gl_FragColor = vec4(col, uNight);
-          #include <colorspace_fragment>
-        }
-      `,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-    }),
-  )
-  nightSky.frustumCulled = false
-  nightSky.renderOrder = -10
-  scene.add(nightSky)
-  let lastNight = -1
-
   const terrain = new Terrain(tier.terrain[0], tier.terrain[1], tier.octaves)
   const dust = new Dust(tier.dust)
   const figure = new Figure(tier.figure)
@@ -218,7 +184,7 @@ export function startStage(): void {
     u.uPalette.value = cur.palette
     u.uToCap.value = cur.toCap
     u.uToWord.value = cur.toWord
-    u.uOpacity.value = (1 - cur.dim * 0.85) * (1 - cur.solid) * introE
+    u.uOpacity.value = (1 - cur.dim) * (1 - cur.solid) * introE
     u.uPointerStrength.value = pointerStrength
     u.uPixelRatio.value = dpr
     u.uSize.value = (Math.PI / 2 / orb.grid) * 0.5 * 2.5 * radius * focal
@@ -234,15 +200,7 @@ export function startStage(): void {
     }
     figure.update(figureOpacity, elapsed, 0.016 * figure.group.scale.x * focal, dpr)
     terrain.update(elapsed, window.scrollY, cur.ground * introE, focal, dpr)
-    dust.update(elapsed, cur.night, dpr)
-
-    // Night: the sky in WebGL, and the page text colours through the --night CSS variable.
-    nightUniforms.uNight.value = cur.night
-    nightSky.visible = cur.night > 0.002
-    if (Math.abs(cur.night - lastNight) > 0.002) {
-      lastNight = cur.night
-      document.documentElement.style.setProperty('--night', cur.night.toFixed(3))
-    }
+    dust.update(elapsed, dpr)
 
     // Slight camera parallax with the mouse.
     const ease = 1 - Math.exp(-dt * 2)
