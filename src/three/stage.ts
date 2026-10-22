@@ -131,6 +131,7 @@ export function startStage(): void {
   let frames = 0
   let frameTime = 0
   let settled = false
+  let rendered = 0
 
   gsap.ticker.add((_time, deltaMS) => {
     const dt = Math.min(deltaMS / 1000, 0.05)
@@ -234,6 +235,7 @@ export function startStage(): void {
     }
 
     renderer.render(scene, camera)
+    if (++rendered === 5) document.documentElement.dataset.stage = 'ready'
 
     // Step the resolution down once if the first seconds run slow.
     if (!settled && clock > 1.5) {
