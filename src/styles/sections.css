@@ -6,9 +6,9 @@ main > section {
 
 h2 {
   font-size: var(--fs-h2);
-  line-height: 1.04;
+  line-height: 1.06;
   letter-spacing: -0.035em;
-  font-weight: 750;
+  font-weight: 500;
   max-width: 16ch;
 }
 
@@ -16,7 +16,7 @@ h3 {
   font-size: var(--fs-h3);
   line-height: 1.3;
   letter-spacing: -0.01em;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .lede {
@@ -53,6 +53,7 @@ h3 {
 
 /* ---------- Hero ---------- */
 .hero {
+  position: relative;
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
@@ -69,9 +70,9 @@ h3 {
 
 .display {
   font-size: var(--fs-display);
-  line-height: 0.98;
-  letter-spacing: -0.045em;
-  font-weight: 760;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 500;
   margin: 28px 0 26px;
 }
 
@@ -102,9 +103,9 @@ h3 {
   flex-direction: column;
   align-items: center;
   font-size: clamp(3.2rem, 9.4vw, 9.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-  font-weight: 780;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-weight: 500;
   max-width: none;
 }
 
@@ -322,7 +323,8 @@ h3 {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .pager {
+  .pager,
+  .badge {
     display: none;
   }
 }
@@ -431,7 +433,8 @@ h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee__track,
-  .rec-dot {
+  .rec-dot,
+  .badge__ring {
     animation: none;
   }
 
@@ -441,6 +444,7 @@ h3 {
 }
 
 .motion-paused .marquee__track,
-.motion-paused .rec-dot {
+.motion-paused .rec-dot,
+.motion-paused .badge__ring {
   animation-play-state: paused;
 }

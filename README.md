@@ -5,6 +5,7 @@ Landing page for **build**: first-person video of real people doing real work, r
 A single static page with a WebGL scene behind the content:
 
 - **Hero orb**: a dot-grid sphere folded by noise, coloured by viewing angle (orange rim, magenta, violet core). It reacts to the pointer.
+- **Landscape**: a dotted mountain range under the orb that drifts towards you as you scroll.
 - **The cap**: the orb's points re-form into the capture cap, then a solid 3D cap takes over and comes apart into its parts as you scroll.
 - **Promises**: a figure made of light, with rays falling into an open hand.
 - **Footer**: the points settle into the "build" wordmark.
@@ -34,11 +35,12 @@ npm run preview   # serve the production build
 | Orb look (noise, colours, dot size) | `src/three/orb.ts` |
 | Capture cap model | `src/three/cap.ts` |
 | Light figure | `src/three/figure.ts` |
+| Mountain landscape | `src/three/terrain.ts` |
 | Scroll choreography | `src/three/choreography.ts` |
 
 ## Behaviour
 
-- **Quality tiers.** Phones get fewer points and no bloom. The page steps down further if frames run slow.
+- **Quality tiers.** Phones get fewer points and a lower pixel ratio. The page steps down further if frames run slow.
 - **Reduced motion.** `prefers-reduced-motion` turns off smooth scrolling and slows the scene. The round button in the nav pauses all animation.
 - **No WebGL.** A CSS dotted orb stands in, and every section still reads.
 
