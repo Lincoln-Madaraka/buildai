@@ -10,15 +10,6 @@ html {
   text-size-adjust: 100%;
 }
 
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
 body {
   margin: 0;
   min-height: 100vh;

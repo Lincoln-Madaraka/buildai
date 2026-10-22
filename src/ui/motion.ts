@@ -11,6 +11,4 @@ export function initMotion(): void {
   query.addEventListener('change', () => {
     motion.reduced = query.matches
   })
-  // Lets CSS skip the hero's intro animation in screenshot mode.
-  if (motion.shot) document.documentElement.classList.add('is-shot')
 }

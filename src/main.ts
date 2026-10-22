@@ -32,17 +32,14 @@ function webglAvailable(): boolean {
 
 const useFallback = () => document.documentElement.classList.add('no-webgl')
 
-// The 3D scene loads after first paint, as its own chunk.
+// The 3D scene is its own chunk, started straight away.
 if (webglAvailable()) {
-  const load = () =>
-    import('./three/stage')
-      .then((stage) => stage.startStage())
-      .catch((error) => {
-        console.error(error)
-        useFallback()
-      })
-  if ('requestIdleCallback' in window) window.requestIdleCallback(load, { timeout: 500 })
-  else setTimeout(load, 100)
+  import('./three/stage')
+    .then((stage) => stage.startStage())
+    .catch((error) => {
+      console.error(error)
+      useFallback()
+    })
 } else {
   useFallback()
 }

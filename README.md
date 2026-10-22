@@ -5,12 +5,12 @@ Landing page for **build**: first-person video of real people doing real work, r
 A single static page with a WebGL scene behind the content:
 
 - **Hero orb**: a dot-grid sphere folded by noise, coloured by viewing angle (orange rim, magenta, violet core). It reacts to the pointer.
-- **Landscape**: a dotted mountain range under the orb that drifts towards you as you scroll.
+- **Landscape**: layered, dotted mountain ridges in morning haze that drift apart as you scroll.
 - **The cap**: the orb's points re-form into the capture cap, then a solid 3D cap takes over and comes apart into its parts as you scroll.
 - **Promises**: a figure made of light, with rays falling into an open hand.
 - **Footer**: the points settle into the "build" wordmark.
 
-Built with Vite, TypeScript, [Three.js](https://threejs.org), [GSAP](https://gsap.com) and [Lenis](https://lenis.darkroom.engineering).
+Built with Vite, TypeScript, [Three.js](https://threejs.org) and [GSAP](https://gsap.com).
 
 ## Run it
 
@@ -40,8 +40,9 @@ npm run preview   # serve the production build
 
 ## Behaviour
 
+- **Fast first paint.** The stylesheet is inlined into the page and the hero fonts are preloaded, so the text shows after one round trip, with no fade-ins. The 3D scene downloads in parallel and draws the orb first; the cap and the figure are built afterwards. Scrolling is native.
 - **Quality tiers.** Phones get fewer points and a lower pixel ratio. The page steps down further if frames run slow.
-- **Reduced motion.** `prefers-reduced-motion` turns off smooth scrolling and slows the scene.
+- **Reduced motion.** `prefers-reduced-motion` slows the scene down.
 - **No WebGL.** A CSS dotted orb stands in, and every section still reads.
 
 ## Content

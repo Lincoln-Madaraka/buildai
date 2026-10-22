@@ -13,7 +13,7 @@ const BILL_SIDE = 1.42 // angle from the front where the bill's corners meet the
 const BILL_HALF_WIDTH = 1.05
 const BILL_TIP = 1.98
 const BILL_ARCH = 0.18 // the middle of the bill sits higher than its corners
-const BILL_CURL = 0.25 // and its sides curl down towards the front
+const BILL_CURL = 0.35 // and its sides curl down towards the front
 const BILL_PITCH = 0.1 // slope down towards the tip
 const BILL_THICK = 0.034
 const BILL_INSET = 0.985 // the bill's inner edge tucks just inside the crown
@@ -32,7 +32,7 @@ const tmpI = new THREE.Vector2()
 const tmpO = new THREE.Vector2()
 
 /** Superellipse exponent of the crown's profile: the front stands up straighter than the back. */
-const profile = (phi: number) => 2.25 + 0.4 * Math.cos(phi)
+const profile = (phi: number) => 2.2 + 0.6 * Math.cos(phi)
 
 /** Height of the crown's lower edge, raised at the front where it follows the curve of the bill. */
 function baseY(phi: number): number {
@@ -104,6 +104,8 @@ function billEdges(u: number, inner: THREE.Vector2, outer: THREE.Vector2): void 
   const c = Math.cos(t)
   const z0 = Math.cos(BILL_SIDE) * SZ
   outer.set(BILL_HALF_WIDTH * Math.sign(c) * Math.abs(c) ** (2 / 2.4), z0 + (BILL_TIP - z0) * Math.abs(Math.sin(t)) ** (2 / 2.4))
+  // The edge sweeps in to a point where each corner meets the crown.
+  outer.lerp(inner, 1 - THREE.MathUtils.smoothstep(Math.min(u, 1 - u), 0, 0.08))
 }
 
 /** Height of the bill's top at x, a distance d out from the crown. */
@@ -150,7 +152,21 @@ function band(path: THREE.Vector3[], across: THREE.Vector3[], through: THREE.Vec
   return mergeGeometries(sides)
 }
 
-const stitch = (points: THREE.Vector3[], radius = 0.0045) =>
+/** A rounded square tile lying flat, its underside on y = 0. */
+function roundedSquare(size: number, radius: number, depth: number, bevel: number): THREE.BufferGeometry {
+  const h = size / 2 - bevel
+  const r = radius - bevel
+  const shape = new THREE.Shape()
+  shape.moveTo(-h + r, -h)
+  shape.absarc(h - r, -h + r, r, -Math.PI / 2, 0, false)
+  shape.absarc(h - r, h - r, r, 0, Math.PI / 2, false)
+  shape.absarc(-h + r, h - r, r, Math.PI / 2, Math.PI, false)
+  shape.absarc(-h + r, -h + r, r, Math.PI, Math.PI * 1.5, false)
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3, curveSegments: 8 })
+  return geometry.rotateX(-Math.PI / 2).translate(0, bevel + 0.001, 0)
+}
+
+const stitch = (points: THREE.Vector3[], radius = 0.003) =>
   new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), points.length * 2, radius, 4, false)
 
 function crownGeometry(): THREE.BufferGeometry {
@@ -184,7 +200,7 @@ function billGeometry(): THREE.BufferGeometry {
     }
     // The fabric wraps round the edge in a half-round.
     billEdges(u, tmpI, tmpO)
-    out.set(tmpO.x - tmpI.x, 0, tmpO.y - tmpI.y).normalize()
+    out.set(tmpO.x - tmpI.x + tmpI.x * 0.01, 0, tmpO.y - tmpI.y + tmpI.y * 0.01).normalize()
     const a = top[top.length - 1]
     const b = under[under.length - 1]
     for (let k = 0; k <= arc; k++) {
@@ -192,13 +208,7 @@ function billGeometry(): THREE.BufferGeometry {
       rim.push(a.clone().lerp(b, (1 - Math.cos(t)) / 2).addScaledVector(out, (Math.sin(t) * BILL_THICK) / 2))
     }
   }
-  // Close the thin ends where the corners meet the crown.
-  const end = (i: number) => {
-    const points: THREE.Vector3[] = []
-    for (let j = 0; j < rows; j++) points.push(top[i * rows + j], under[i * rows + j])
-    return grid(points, rows, 2)
-  }
-  return mergeGeometries([grid(top, cols, rows, true), grid(under, cols, rows), grid(rim, cols, arc + 1, true), end(0), end(cols - 1)])
+  return mergeGeometries([grid(top, cols, rows, true), grid(under, cols, rows), grid(rim, cols, arc + 1, true)])
 }
 
 const coneVertex = /* glsl */ `
@@ -260,16 +270,16 @@ export class Cap {
   constructor() {
     const fabric = this.fade(
       new THREE.MeshPhysicalMaterial({
-        color: 0x15151a,
-        roughness: 0.92,
-        sheen: 1,
-        sheenRoughness: 0.5,
-        sheenColor: new THREE.Color(0x6a6a80),
+        color: 0x0f0f11,
+        roughness: 0.94,
+        sheen: 0.8,
+        sheenRoughness: 0.45,
+        sheenColor: new THREE.Color(0x4c4c52),
         side: THREE.DoubleSide,
       }),
     )
-    const tape = this.fade(new THREE.MeshStandardMaterial({ color: 0x1c1c22, roughness: 0.85, side: THREE.DoubleSide }))
-    const thread = this.fade(new THREE.MeshStandardMaterial({ color: 0x34343f, roughness: 0.7 }))
+    const tape = this.fade(new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.85, side: THREE.DoubleSide }))
+    const thread = this.fade(new THREE.MeshStandardMaterial({ color: 0x3a3a3f, roughness: 0.7 }))
     const plastic = this.fade(
       new THREE.MeshPhysicalMaterial({ color: 0x1a1a1f, roughness: 0.62, metalness: 0.05, clearcoat: 0.2, clearcoatRoughness: 0.6 }),
     )
@@ -412,8 +422,7 @@ export class Cap {
     this.clipBase.set(0, seat, MODULE_Z)
     this.clip.position.copy(this.clipBase)
     this.clip.rotation.x = tilt
-    const plate = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.032, 0.3, 3, 0.012), plastic)
-    plate.position.y = 0.017
+    const plate = new THREE.Mesh(roundedSquare(0.26, 0.06, 0.016, 0.008), plastic)
     const magnet = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.006, 24), metal)
     magnet.position.y = 0.034
     this.clip.add(plate, magnet)
@@ -483,7 +492,7 @@ export class Cap {
 
     this.anchors.lens = this.anchor(this.module, 0.18, -0.11, 0.1)
     this.anchors.usb = this.anchor(this.plug, -0.15, 0, 0)
-    this.anchors.brim = this.anchor(this.clip, 0.16, 0.02, 0)
+    this.anchors.brim = this.anchor(this.brim, 0.2, seat - BILL_THICK, MODULE_Z)
     this.anchors.cable = this.anchor(this.inner, 0, 0, 0)
     this.rebuildCable(0)
 
@@ -503,7 +512,7 @@ export class Cap {
     this.button.position.y = SY - 0.004 + 0.24 * explode
     this.strap.position.z = -0.14 * explode
     this.brim.position.set(0, -0.03 * explode, 0.16 * explode)
-    this.clip.position.copy(this.clipBase).add(this.tmp.set(0, 0.22 * explode, 0))
+    this.clip.position.copy(this.clipBase).add(this.tmp.set(0, 0.1 * explode, 0))
     this.module.position.copy(this.moduleBase).add(this.tmp.set(0, -0.4 * explode, 0.14 * explode))
     this.plug.position.copy(this.plugBase).add(this.tmp.set(-0.12 * explode, 0, 0))
     if (Math.abs(explode - this.lastExplode) > 0.002) this.rebuildCable(explode)
@@ -528,7 +537,7 @@ export class Cap {
     const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal')
     this.cable.geometry.dispose()
     this.cable.geometry = new THREE.TubeGeometry(curve, 64, 0.015, 8, false)
-    this.anchors.cable.position.copy(curve.getPoint(0.5))
+    this.anchors.cable.position.copy(curve.getPoint(0.8))
     this.lastExplode = explode
   }
 

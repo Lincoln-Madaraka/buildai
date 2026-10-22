@@ -53,7 +53,7 @@ void main() {
   vec2 g = fract(vPos * uDots) - 0.5;
   float dots = 1.0 - smoothstep(0.2, 0.32, length(g));
   // Lighter behind the text column on the left.
-  float side = mix(0.55, 1.0, smoothstep(-0.7, 0.05, vSide));
+  float side = mix(0.42, 1.0, smoothstep(-0.7, 0.1, vSide));
   gl_FragColor = vec4(uColor, mix(0.18, 0.95, fade) * mix(0.5, 1.0, dots) * side * uOpacity);
   #include <colorspace_fragment>
 }
