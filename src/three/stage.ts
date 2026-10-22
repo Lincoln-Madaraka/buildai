@@ -87,6 +87,7 @@ export function startStage(): void {
     .map((el) => ({ el, anchor: cap.anchors[el.dataset.anchor ?? ''] }))
     .filter((a) => a.anchor)
   const hotspot = document.querySelector<HTMLElement>('[data-hotspot]')
+  let hotspotCardWidth = 300
 
   let width = 1
   let height = 1
@@ -98,6 +99,7 @@ export function startStage(): void {
     camera.aspect = width / height
     camera.updateProjectionMatrix()
     focal = height / 2 / TAN
+    hotspotCardWidth = hotspot?.querySelector<HTMLElement>('.hotspot__card')?.offsetWidth || hotspotCardWidth
     choreo.measure(camera.aspect)
   }
   resize()
@@ -215,14 +217,15 @@ export function startStage(): void {
       a.el.style.transform = `translate3d(${(tmp.x * 0.5 + 0.5) * width + 12}px, ${(-tmp.y * 0.5 + 0.5) * height - 14}px, 0)`
     }
 
-    // The hero hotspot card points at the orb's upper right.
+    // The hero hotspot card points at the top of the orb and stays inside the screen.
     if (hotspot) {
       const show = width >= 1100 ? (1 - THREE.MathUtils.smoothstep(window.scrollY, 0, height * 0.3)) * introE : 0
       hotspot.style.opacity = String(show)
       if (show > 0.01) {
-        tmp.set(rig.position.x + radius * 0.5, rig.position.y + radius * 0.62, radius * 0.6).project(camera)
-        hotspot.style.setProperty('--x', `${(tmp.x * 0.5 + 0.5) * width}px`)
-        hotspot.style.setProperty('--y', `${(-tmp.y * 0.5 + 0.5) * height}px`)
+        tmp.set(rig.position.x + radius * 0.22, rig.position.y + radius * 0.74, radius * 0.6).project(camera)
+        const maxX = width - 40 - 78 - hotspotCardWidth
+        hotspot.style.setProperty('--x', `${Math.min((tmp.x * 0.5 + 0.5) * width, maxX)}px`)
+        hotspot.style.setProperty('--y', `${Math.max((-tmp.y * 0.5 + 0.5) * height, 190)}px`)
       }
     }
 

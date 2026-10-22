@@ -33,7 +33,7 @@ float ridge(vec2 p) {
 
 // Low ground near the camera, ridged mountains rising towards the horizon.
 float heightAt(vec2 xz) {
-  float far = smoothstep(1.0, -20.0, xz.y);
+  float far = 1.0 - smoothstep(-20.0, 1.0, xz.y);
   vec2 p = vec2(xz.x, xz.y - uTravel) * 0.09;
   return ridge(p) * mix(0.35, 4.6, far) - 0.2;
 }
@@ -53,10 +53,11 @@ void main() {
   vColor = mix(col, uHigh, peak * lit);
 
   float dist = -mv.z;
-  float fog = smoothstep(34.0, 14.0, dist);
+  float fog = 1.0 - smoothstep(16.0, 36.0, dist);
   float near = smoothstep(4.0, 8.0, dist);
   vAlpha = (0.16 + 0.7 * lit * (0.35 + 0.65 * peak)) * fog * near * uOpacity * (0.7 + 0.3 * aRand);
-  gl_PointSize = uSize * uPixelRatio * (0.8 + 0.4 * aRand) / dist;
+  // Size falls off gently with distance so the far ridges stay legible.
+  gl_PointSize = uSize * uPixelRatio * (0.8 + 0.4 * aRand) / sqrt(dist);
 }
 `
 
@@ -117,7 +118,7 @@ export class Terrain {
     const u = this.uniforms
     u.uTravel.value = time * 0.25 + scrollY * 0.0035
     u.uOpacity.value = opacity
-    u.uSize.value = 0.0155 * focal
+    u.uSize.value = 0.006 * focal
     u.uPixelRatio.value = pixelRatio
     this.points.visible = opacity > 0.01
   }

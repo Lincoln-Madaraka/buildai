@@ -64,7 +64,7 @@ void main() {
   float y = vUv.y;
   float streak = pow(noise1(x * 38.0), 5.0) * 0.9 + pow(noise1(x * 91.0 + 7.0), 7.0) * 0.6 + pow(noise1(x * 17.0 + 3.0), 3.0) * 0.35;
   float flow = 0.6 + 0.4 * noise1(x * 55.0 + y * 7.0 + uTime * 1.2);
-  float fadeY = smoothstep(0.0, 0.22, y) * smoothstep(1.0, 0.72, y);
+  float fadeY = smoothstep(0.0, 0.22, y) * (1.0 - smoothstep(0.72, 1.0, y));
   float fadeX = 1.0 - pow(abs(x - 0.5) * 2.0, 1.6);
   vec3 col = mix(vec3(1.0, 0.5, 0.32), vec3(0.72, 0.82, 1.0), smoothstep(0.05, 0.45, y));
   gl_FragColor = vec4(col, streak * flow * fadeY * fadeX * uOpacity * 0.5);

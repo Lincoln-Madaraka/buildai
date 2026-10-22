@@ -61,7 +61,7 @@ varying float vAlpha;
 void main() {
   float d = length(gl_PointCoord - 0.5) * 2.0;
   if (d > 1.0) discard;
-  float core = smoothstep(0.5, 0.3, d);
+  float core = 1.0 - smoothstep(0.3, 0.5, d);
   float halo = exp(-d * d * 4.5) * 0.3;
   gl_FragColor = vec4(vColor, (core + halo) * vAlpha);
   #include <colorspace_fragment>
