@@ -78,6 +78,9 @@ export function startStage(): void {
     .then((pos) => orb.setTarget('aWord', pos))
     .catch(() => undefined)
 
+  // Screenshot mode exposes the renderer so a test script can read draw stats.
+  if (motion.shot) Object.assign(window, { __stage: { renderer, scene, terrain } })
+
   const choreo = new Choreography()
   const target: SceneValues = choreo.values()
   const cur: SceneValues = choreo.values()

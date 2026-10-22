@@ -76,6 +76,10 @@ h3 {
   margin: 20px 0 24px;
 }
 
+.display .accent {
+  white-space: nowrap;
+}
+
 .hero .lede {
   max-width: 32rem;
 }

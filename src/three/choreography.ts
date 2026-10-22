@@ -33,7 +33,7 @@ interface Key {
 }
 
 const START: SceneValues = {
-  x: 0.27, y: 0.02, s: 1, amp: 1, palette: 0, toCap: 0, solid: 0, explode: 0, cone: 0,
+  x: 0.31, y: 0.02, s: 1, amp: 1, palette: 0, toCap: 0, solid: 0, explode: 0, cone: 0,
   toWord: 0, dim: 0, figure: 0, ground: 1,
 }
 
