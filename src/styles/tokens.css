@@ -1,19 +1,14 @@
 :root {
   color-scheme: light;
 
-  /* 0 by day, 1 when the scene turns to night (the Promises section). Set by the 3D stage. */
-  --night: 0;
-
-  /* Fixed ink for UI that sits on light glass: nav, buttons, cards. */
   --ink: #0d0f14;
   --ink-2: #3b4150;
   --ink-3: #5f6574;
 
-  /* Section text follows the scene: dark by day, white at night. */
-  --fg: color-mix(in srgb, #ffffff calc(var(--night) * 100%), var(--ink));
-  --fg-2: color-mix(in srgb, rgba(255, 255, 255, 0.8) calc(var(--night) * 100%), var(--ink-2));
-  --muted: color-mix(in srgb, rgba(255, 255, 255, 0.62) calc(var(--night) * 100%), var(--ink-3));
-  --line: color-mix(in srgb, rgba(255, 255, 255, 0.22) calc(var(--night) * 100%), rgba(13, 15, 20, 0.1));
+  --fg: var(--ink);
+  --fg-2: var(--ink-2);
+  --muted: var(--ink-3);
+  --line: rgba(13, 15, 20, 0.1);
   --line-strong: rgba(13, 15, 20, 0.18);
 
   --bg: #e9edf2;
