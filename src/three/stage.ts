@@ -25,8 +25,19 @@ function lerpAngle(a: number, b: number, t: number): number {
   return a + d * t
 }
 
-/** Builds the WebGL scene behind the page and drives it from scroll, pointer and time. */
-export function startStage(): void {
+/** Waits for a quiet moment, so heavy setup never holds up taps and scrolling for long. */
+function idle(): Promise<void> {
+  return new Promise((resolve) => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(() => resolve(), { timeout: 400 })
+    else setTimeout(resolve, 50)
+  })
+}
+
+/**
+ * Builds the WebGL scene behind the page and drives it from scroll, pointer and time.
+ * The orb and landscape come up first; the cap and the figure, further down the page, are built after.
+ */
+export async function startStage(): Promise<void> {
   const canvas = document.getElementById('stage') as HTMLCanvasElement | null
   if (!canvas) return
   const tier = pickTier()
@@ -61,19 +72,17 @@ export function startStage(): void {
   cool.position.set(3.2, 1.2, -2)
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd8cdc0, 1.3), key, warm, cool)
 
-  const terrain = new Terrain(tier.terrain[0], tier.terrain[1], tier.octaves)
+  const terrain = new Terrain()
   const dust = new Dust(tier.dust)
-  const figure = new Figure(tier.figure)
   const rig = new THREE.Group()
   const orb = new Orb(tier.grid)
-  const cap = new Cap()
-  orb.points.add(cap.group)
   rig.add(orb.points)
-  scene.add(terrain.points, dust.points, figure.group, rig)
+  scene.add(terrain.group, dust.points, rig)
+  // Built once the orb is on screen (see the end of this function).
+  let cap: Cap | null = null
+  let figure: Figure | null = null
+  let annotations: { el: HTMLElement; anchor: THREE.Object3D; left: boolean }[] = []
 
-  const capSamples = sampleSurface(cap.surfaceMeshes(), cap.group, orb.count)
-  orb.setTarget('aCap', capSamples.pos)
-  orb.setTarget('aCapN', capSamples.nrm)
   sampleWordmark('logo-mark.png', orb.count)
     .then((pos) => orb.setTarget('aWord', pos))
     .catch(() => undefined)
@@ -86,9 +95,6 @@ export function startStage(): void {
   const cur: SceneValues = choreo.values()
   const fields = Object.keys(cur) as (keyof SceneValues)[]
 
-  const annotations = Array.from(document.querySelectorAll<HTMLElement>('.annotation'))
-    .map((el) => ({ el, anchor: cap.anchors[el.dataset.anchor ?? ''], left: el.dataset.side === 'left' }))
-    .filter((a) => a.anchor)
   const hotspot = document.querySelector<HTMLElement>('[data-hotspot]')
   let hotspotCardWidth = 300
 
@@ -135,6 +141,9 @@ export function startStage(): void {
   let frameTime = 0
   let settled = false
   let rendered = 0
+
+  // Compile the shaders before the first frame, in parallel where the browser supports it, instead of stalling on it.
+  await renderer.compileAsync(scene, camera)
 
   gsap.ticker.add((_time, deltaMS) => {
     const dt = Math.min(deltaMS / 1000, 0.05)
@@ -193,17 +202,19 @@ export function startStage(): void {
     u.uPixelRatio.value = dpr
     u.uSize.value = (Math.PI / 2 / orb.grid) * 0.5 * 2.5 * radius * focal
 
-    cap.update(cur.solid * introE, cur.explode, cur.cone, elapsed)
+    cap?.update(cur.solid * introE, cur.explode, cur.cone, elapsed)
 
-    const figureOpacity = cur.figure * introE * (phone ? 0.55 : 1)
-    if (figureOpacity > 0.01) {
-      const scale = halfH * (phone ? 0.52 : 0.62)
-      figure.group.position.set(phone ? 0 : halfW * 0.42, -halfH * 0.04, 0)
-      figure.group.scale.setScalar(scale)
-      figure.group.rotation.y = Math.sin(elapsed * 0.2) * 0.08 + (mouse ? ndc.x * 0.1 : 0)
+    if (figure) {
+      const figureOpacity = cur.figure * introE * (phone ? 0.55 : 1)
+      if (figureOpacity > 0.01) {
+        const scale = halfH * (phone ? 0.52 : 0.62)
+        figure.group.position.set(phone ? 0 : halfW * 0.42, -halfH * 0.04, 0)
+        figure.group.scale.setScalar(scale)
+        figure.group.rotation.y = Math.sin(elapsed * 0.2) * 0.08 + (mouse ? ndc.x * 0.1 : 0)
+      }
+      figure.update(figureOpacity, elapsed, 0.016 * figure.group.scale.x * focal, dpr)
     }
-    figure.update(figureOpacity, elapsed, 0.016 * figure.group.scale.x * focal, dpr)
-    terrain.update(elapsed, window.scrollY, cur.ground * introE, focal, dpr)
+    terrain.update(elapsed, window.scrollY, cur.ground * introE, focal)
     dust.update(elapsed, dpr)
 
     // Slight camera parallax with the mouse.
@@ -257,4 +268,28 @@ export function startStage(): void {
       }
     }
   })
+
+  // The cap and the figure only show further down the page: build them a piece at a time, then warm up their
+  // shaders, so the page stays responsive and reaching the cap doesn't stall on compiling. A failure here
+  // leaves the orb running rather than dropping to the fallback.
+  try {
+    await idle()
+    const builtCap = new Cap()
+    const capSamples = sampleSurface(builtCap.surfaceMeshes(), builtCap.group, orb.count)
+    orb.setTarget('aCap', capSamples.pos)
+    orb.setTarget('aCapN', capSamples.nrm)
+    orb.points.add(builtCap.group)
+    annotations = Array.from(document.querySelectorAll<HTMLElement>('.annotation'))
+      .map((el) => ({ el, anchor: builtCap.anchors[el.dataset.anchor ?? ''], left: el.dataset.side === 'left' }))
+      .filter((a) => a.anchor)
+    cap = builtCap
+
+    await idle()
+    const builtFigure = new Figure(tier.figure)
+    scene.add(builtFigure.group)
+    figure = builtFigure
+    await renderer.compileAsync(scene, camera)
+  } catch (error) {
+    console.error(error)
+  }
 }

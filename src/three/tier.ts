@@ -4,15 +4,13 @@ export interface Tier {
   grid: number
   dprCap: number
   figure: number
-  terrain: [columns: number, rows: number]
-  octaves: number
   dust: number
 }
 
 const TIERS: Record<Tier['name'], Tier> = {
-  high: { name: 'high', grid: 92, dprCap: 1.75, figure: 14000, terrain: [260, 140], octaves: 4, dust: 1400 },
-  mid: { name: 'mid', grid: 76, dprCap: 1.5, figure: 10000, terrain: [200, 110], octaves: 4, dust: 900 },
-  low: { name: 'low', grid: 60, dprCap: 1.5, figure: 6000, terrain: [150, 80], octaves: 3, dust: 500 },
+  high: { name: 'high', grid: 92, dprCap: 1.75, figure: 14000, dust: 1400 },
+  mid: { name: 'mid', grid: 76, dprCap: 1.5, figure: 10000, dust: 900 },
+  low: { name: 'low', grid: 60, dprCap: 1.5, figure: 6000, dust: 500 },
 }
 
 export function pickTier(): Tier {

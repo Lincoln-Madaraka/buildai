@@ -55,7 +55,7 @@ export default defineConfig({
   build: {
     target: 'es2020',
     chunkSizeWarningLimit: 900,
-    // Keep fonts as files: inlined, they'd bloat the page even for scripts the visitor never sees.
+    // Keep fonts as files: inlined into the page, they'd load even for alphabets the visitor never needs.
     assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),
   },
 })

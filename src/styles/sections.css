@@ -80,6 +80,40 @@ h3 {
   white-space: nowrap;
 }
 
+/* The hero rises in with CSS from the first paint, so it never waits for the scripts.
+   The delays need the .hero prefix and must follow the shorthand, or it resets them. */
+.hero [data-reveal] {
+  animation: rise 1.1s var(--ease-out) both;
+}
+
+.hero .display {
+  animation-delay: 0.04s;
+}
+
+.hero .lede {
+  animation-delay: 0.08s;
+}
+
+.hero .hero__ctas {
+  animation-delay: 0.16s;
+}
+
+.hero .glass-bar {
+  animation-delay: 0.24s;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+/* motion.ts adds .is-shot in ?shot= screenshot mode. */
+.is-shot .hero [data-reveal] {
+  animation: none;
+}
+
 .hero .lede {
   max-width: 32rem;
 }
@@ -425,7 +459,8 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee__track {
+  .marquee__track,
+  .hero [data-reveal] {
     animation: none;
   }
 

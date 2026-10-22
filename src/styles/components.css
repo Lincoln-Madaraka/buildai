@@ -173,8 +173,7 @@
 }
 
 /* Accent phrases: italic serif in the orb's gradient. */
-.accent,
-.accent .word {
+.accent {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 400;
@@ -186,12 +185,6 @@
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   padding-right: 0.06em;
-}
-
-/* Room for italic overhangs inside SplitText's word masks. */
-.word-mask {
-  padding: 0 0.08em 0.08em;
-  margin: 0 -0.08em -0.08em;
 }
 
 /* ---------- Glass ---------- */

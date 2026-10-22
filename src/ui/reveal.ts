@@ -1,9 +1,8 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { SplitText } from 'gsap/SplitText'
 import { motion } from './motion'
 
-gsap.registerPlugin(ScrollTrigger, SplitText)
+gsap.registerPlugin(ScrollTrigger)
 
 export function initReveal(): void {
   // "New place. New job. New person." lights up phrase by phrase as the section scrolls through.
@@ -24,7 +23,8 @@ export function initReveal(): void {
   // With reduced motion, or in screenshot mode, everything is simply visible.
   if (motion.reduced || motion.shot) return
 
-  const items = gsap.utils.toArray<HTMLElement>('[data-reveal]')
+  // The hero animates in with CSS from the first paint (see sections.css), so it never waits for this script.
+  const items = gsap.utils.toArray<HTMLElement>('[data-reveal]').filter((el) => !el.closest('.hero'))
   gsap.set(items, { autoAlpha: 0, y: 28 })
   ScrollTrigger.batch(items, {
     start: 'top 90%',
@@ -32,10 +32,4 @@ export function initReveal(): void {
     onEnter: (batch) =>
       gsap.to(batch, { autoAlpha: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.08, overwrite: true }),
   })
-
-  const headline = document.querySelector<HTMLElement>('[data-split]')
-  if (headline) {
-    const split = SplitText.create(headline, { type: 'words', tag: 'span', wordsClass: 'word', mask: 'words' })
-    gsap.from(split.words, { yPercent: 115, duration: 1.25, ease: 'expo.out', stagger: 0.07, delay: 0.15 })
-  }
 }
