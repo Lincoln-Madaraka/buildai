@@ -18,6 +18,8 @@ const BILL_PITCH = 0.1 // slope down towards the tip
 const BILL_THICK = 0.034
 const BILL_INSET = 0.985 // the bill's inner edge tucks just inside the crown
 
+const SEAM_OFFSETS = [-0.022, 0.022, -0.03, 0.03] // topstitching outside, then the tape's edges inside
+
 const OPEN_HALF = 0.36 // back opening above the strap: half its width, as an angle
 const OPEN_TOP = 0.5 // and its height
 
@@ -314,7 +316,7 @@ export class Cap {
       for (let i = 0; i <= 24; i++) {
         const v = start + (end - start) * (i / 24)
         const g = girth(seam, v)
-        ;[-0.022, 0.022, -0.03, 0.03].forEach((o, s) => {
+        SEAM_OFFSETS.forEach((o, s) => {
           crown(seam + o / g, v, p)
           rows[s].push(p.clone().addScaledVector(outward(p, n), s < 2 ? 0.004 : -0.008))
         })
