@@ -7,6 +7,10 @@ uniform float uTime;
 uniform float uOpacity;
 uniform float uSize;
 uniform float uPixelRatio;
+uniform vec3 uRim;
+uniform vec3 uSoft;
+uniform vec3 uWarm;
+uniform vec3 uHot;
 attribute vec3 aN;
 attribute float aKind;
 attribute vec3 aRand;
@@ -25,16 +29,17 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
 
-  // Bright outline, dark interior: the silhouette is drawn by its rim.
+  // The silhouette is drawn by its outline: dense, dark dots on the rim, a faint interior.
   vec3 n = normalize(normalMatrix * aN);
-  float rim = pow(1.0 - abs(dot(n, normalize(-mv.xyz))), 2.4);
+  float rim = pow(1.0 - abs(dot(n, normalize(-mv.xyz))), 2.0);
   float top = max(aN.y, 0.0);
-  vec3 body = mix(vec3(0.22, 0.34, 0.75), vec3(0.8, 0.9, 1.0), clamp(rim + top * 0.35, 0.0, 1.0));
-  vec3 hand = mix(vec3(0.55, 0.06, 0.03), vec3(1.0, 0.42, 0.18), clamp(rim + top * 0.7, 0.0, 1.0));
+  vec3 body = mix(uSoft, uRim, rim);
+  body = mix(body, uWarm, top * rim * 0.35);
+  vec3 hand = mix(uWarm, uHot, clamp(rim + top * 0.6, 0.0, 1.0));
   vColor = mix(body, hand, aKind);
 
-  float aBody = 0.04 + 0.9 * rim + 0.35 * top * rim;
-  float aHand = 0.25 + 0.75 * max(rim, top * 0.8);
+  float aBody = 0.06 + 0.8 * rim;
+  float aHand = 0.35 + 0.6 * max(rim, top * 0.8);
   vAlpha = mix(aBody, aHand, aKind) * mix(1.0, 1.0 - life, shed) * uOpacity;
   gl_PointSize = uSize * uPixelRatio * (0.7 + 0.6 * aRand.y) / -mv.z;
 }
@@ -48,7 +53,7 @@ void main() {
 }
 `
 
-// Light falling from the head into the open hand: soft vertical streaks that shimmer downwards.
+// Sunlight falling from above into the open hand: soft golden streaks that shimmer downwards.
 const raysFragment = /* glsl */ `
 uniform float uTime;
 uniform float uOpacity;
@@ -66,24 +71,25 @@ void main() {
   float flow = 0.6 + 0.4 * noise1(x * 55.0 + y * 7.0 + uTime * 1.2);
   float fadeY = smoothstep(0.0, 0.22, y) * (1.0 - smoothstep(0.72, 1.0, y));
   float fadeX = 1.0 - pow(abs(x - 0.5) * 2.0, 1.6);
-  vec3 col = mix(vec3(1.0, 0.5, 0.32), vec3(0.72, 0.82, 1.0), smoothstep(0.05, 0.45, y));
-  gl_FragColor = vec4(col, streak * flow * fadeY * fadeX * uOpacity * 0.5);
+  vec3 col = mix(vec3(1.0, 0.45, 0.18), vec3(1.0, 0.86, 0.62), smoothstep(0.05, 0.45, y));
+  gl_FragColor = vec4(col, min(streak * flow, 1.0) * fadeY * fadeX * uOpacity * 0.45);
   #include <colorspace_fragment>
 }
 `
 
 const glowFragment = /* glsl */ `
 uniform float uOpacity;
+uniform vec3 uColor;
+uniform float uStrength;
 varying vec2 vUv;
 void main() {
   vec2 p = (vUv - 0.5) * vec2(1.0, 1.4);
-  float a = exp(-dot(p, p) * 9.0) * uOpacity * 0.75;
-  gl_FragColor = vec4(vec3(1.0, 0.4, 0.2), a);
+  gl_FragColor = vec4(uColor, exp(-dot(p, p) * 9.0) * uOpacity * uStrength);
   #include <colorspace_fragment>
 }
 `
 
-/** A head-and-shoulders figure made of light, with rays falling into an open, warm-lit hand. */
+/** A head-and-shoulders figure drawn in points, with sunlight falling into an open, warm-lit hand. */
 export class Figure {
   readonly group = new THREE.Group()
   private readonly uniforms = {
@@ -91,8 +97,13 @@ export class Figure {
     uOpacity: { value: 0 },
     uSize: { value: 10 },
     uPixelRatio: { value: 1 },
+    uRim: { value: new THREE.Color('#141a3a') },
+    uSoft: { value: new THREE.Color('#8c96b8') },
+    uWarm: { value: new THREE.Color('#ff7a2a') },
+    uHot: { value: new THREE.Color('#ff3b1f') },
   }
   private readonly light = { uTime: { value: 0 }, uOpacity: { value: 0 } }
+  private readonly glows: { uOpacity: { value: number } }[] = []
 
   constructor(count: number) {
     const shape = new THREE.Group()
@@ -160,11 +171,10 @@ export class Figure {
       new THREE.ShaderMaterial({
         uniforms: this.uniforms,
         vertexShader,
-        fragmentShader: dotFragment(0.3),
+        fragmentShader: dotFragment(0.15),
         transparent: true,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending,
       }),
     )
     points.frustumCulled = false
@@ -178,25 +188,17 @@ export class Figure {
         transparent: true,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending,
       }),
     )
     rays.position.set(0.04, -0.05, 0.3)
-    const glow = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.2, 0.9),
-      new THREE.ShaderMaterial({
-        uniforms: this.light,
-        vertexShader: planeVertex,
-        fragmentShader: glowFragment,
-        transparent: true,
-        depthWrite: false,
-        depthTest: false,
-        blending: THREE.AdditiveBlending,
-      }),
-    )
-    glow.position.set(0.05, -1.02, 0.7)
 
-    this.group.add(rays, glow, points)
+    // A pale backlight behind the figure and a warm glow in the hand.
+    const backlight = this.glow(3.4, 3.8, '#ffffff', 0.7)
+    backlight.position.set(0, 0.1, -0.4)
+    const handGlow = this.glow(1.2, 0.9, '#ff6a2a', 0.5)
+    handGlow.position.set(0.05, -1.02, 0.7)
+
+    this.group.add(backlight, rays, handGlow, points)
     this.group.visible = false
   }
 
@@ -208,5 +210,22 @@ export class Figure {
     this.uniforms.uPixelRatio.value = pixelRatio
     this.light.uOpacity.value = opacity
     this.light.uTime.value = time
+    for (const g of this.glows) g.uOpacity.value = opacity
+  }
+
+  private glow(width: number, height: number, color: string, strength: number): THREE.Mesh {
+    const uniforms = { uOpacity: { value: 0 }, uColor: { value: new THREE.Color(color) }, uStrength: { value: strength } }
+    this.glows.push(uniforms)
+    return new THREE.Mesh(
+      new THREE.PlaneGeometry(width, height),
+      new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader: planeVertex,
+        fragmentShader: glowFragment,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+      }),
+    )
   }
 }
