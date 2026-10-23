@@ -42,7 +42,8 @@ const KEYS: Key[] = [
   { sel: '#why', at: 0.22, d: { x: 0, y: 0, s: 1.2, amp: 1.3, dim: 0.4, ground: 0.7 }, m: { s: 0.9 } },
   { sel: '#why', at: 0.55, d: { palette: 1, s: 1.28 }, m: { s: 0.95 } },
   { sel: '#why', at: 0.88, d: { palette: 0, s: 1.1 }, m: { s: 0.85 } },
-  { sel: '#cap', at: 0.1, d: { x: 0.24, y: 0, s: 0.92, amp: 0.45, dim: 0, toCap: 1, ground: 0.5 }, m: { x: 0, y: 0.3, s: 0.62 } },
+  // On phones the cap sits in the top half, clear of the copy card pinned to the bottom.
+  { sel: '#cap', at: 0.1, d: { x: 0.24, y: 0, s: 0.92, amp: 0.45, dim: 0, toCap: 1, ground: 0.5 }, m: { x: 0, y: 0.32, s: 0.5 } },
   { sel: '#cap', at: 0.3, d: { solid: 1 } },
   { sel: '#cap', at: 0.72, d: { explode: 1, cone: 1 } },
   { sel: '#cap', at: 0.86, d: {} },

@@ -373,6 +373,11 @@ h3 {
     backdrop-filter: blur(12px);
   }
 
+  /* Keep the pinned card short so the cap stays in view; the lede and the hero bar carry these facts. */
+  .cap .spec-list {
+    display: none;
+  }
+
   .promise-grid {
     grid-template-columns: 1fr;
     gap: 20px;
